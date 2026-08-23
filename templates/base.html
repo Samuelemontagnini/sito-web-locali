@@ -1,128 +1,317 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Drink Kong - Eventi</title>
-    
-    <!-- Font e Icone -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Leaflet CSS per le Mappe -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+{% extends 'base.html' %}
 
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            overflow-x: hidden;
-            width: 100%;
-        }
+{% block content %}
 
-        /* Navbar Responsiva */
-        .navbar {
-            background: #000000;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #222;
-            position: sticky;
-            top: 0;
-            z-index: 2000;
-        }
+<!-- Hero Banner Responsivo -->
+<div class="hero-section">
+    <h1 class="hero-title">Drink Kong</h1>
+    <h2 class="hero-subtitle">Esplora Tutti Gli Eventi</h2>
+    <p class="hero-desc">L'energia della tua città, a portata di click.</p>
+</div>
 
-        .nav-brand {
-            color: #f39c12;
-            font-weight: bold;
-            font-size: 1.1em;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
+<div class="main-container">
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
+    <!-- Form Ricerca: Effetto Vetro Satinato (Glassmorphism) -->
+    <div class="search-container">
+        <form action="/" method="GET" class="search-form glass-effect">
+            <input type="text" name="q" placeholder="Cerca località o titolo..." class="input-control">
+            <input type="date" name="data" class="input-control">
+            <select name="orario" class="input-control">
+                <option value="">Tutti gli orari</option>
+                <option value="mattina">Mattina (6:00 - 12:00)</option>
+                <option value="pomeriggio">Pomeriggio (12:00 - 18:00)</option>
+                <option value="sera">Sera (18:00 - 24:00)</option>
+            </select>
+            <button type="submit" class="btn-search">Cerca Eventi</button>
+        </form>
+    </div>
 
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #00f3ff;
-        }
-
-        /* Notifiche Flash */
-        .flash-msg {
-            max-width: 1200px;
-            margin: 15px auto;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .flash-success { background: #27ae60; color: white; }
-        .flash-danger { background: #c0392b; color: white; }
-
-        @media (max-width: 600px) {
-            .navbar {
-                flex-direction: column;
-                gap: 12px;
-                padding: 15px;
-            }
-            .nav-links {
-                width: 100%;
-                justify-content: center;
-                gap: 15px;
-                flex-wrap: wrap;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <nav class="navbar">
-        <a href="/" class="nav-brand">DRINK KONG</a>
-        <div class="nav-links">
-            <a href="/">HOME</a>
-            {% if current_user.is_authenticated %}
-                {% if current_user.is_admin %}
-                    <a href="/admin/add" style="color: #f39c12;"><i class="fas fa-plus-circle"></i> NUOVO EVENTO</a>
-                {% endif %}
-                <span style="color: #888; font-size: 0.85em;">{{ current_user.username }}</span>
-                <a href="/logout" style="color: #e74c3c;">LOGOUT</a>
-            {% else %}
-                <a href="/login">LOGIN</a>
-                <a href="/register">REGISTRATI</a>
-            {% endif %}
+    <!-- Griglia Eventi con animazione allo scroll -->
+    <h3 class="section-title">Eventi in Programma</h3>
+    <div class="events-grid">
+        {% for evento in eventi %}
+        <div class="event-card fade-in-on-scroll" onclick="openModal('{{ evento.titolo }}', '{{ evento.descrizione }}', '{{ evento.data }}', '{{ evento.orario }}', '{{ evento.indirizzo }}', '{{ evento.immagine }}')">
+            <div class="card-img-wrapper">
+                <img src="{{ evento.immagine }}" alt="{{ evento.titolo }}" class="event-img">
+                <div class="img-overlay">Scopri di più</div>
+            </div>
+            <div class="event-body">
+                <h3 class="event-title">{{ evento.titolo }}</h3>
+                <p class="event-time"><i class="far fa-calendar-alt"></i> {{ evento.data }} <span class="divider">|</span> <i class="far fa-clock"></i> {{ evento.orario }}</p>
+                <p class="event-location"><i class="fas fa-map-marker-alt"></i> {{ evento.indirizzo }}</p>
+            </div>
         </div>
-    </nav>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash-msg flash-{{ category }}">{{ message }}</div>
-            {% endfor %}
+        {% endfor %}
+        
+        {% if not eventi %}
+        <div class="no-events fade-in-on-scroll">
+            <i class="fas fa-search" style="font-size: 3em; color: #444; margin-bottom: 15px; display: block;"></i>
+            Nessun evento trovato con i filtri selezionati.
+        </div>
         {% endif %}
-    {% endwith %}
+    </div>
 
-    {% block content %}{% endblock %}
+    <!-- Mappa Scura Responsiva -->
+    <h3 class="section-title"><i class="fas fa-globe-europe"></i> Mappa Interattiva</h3>
+    <div id="map" class="map-container fade-in-on-scroll"></div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    {% block scripts %}{% endblock %}
-</body>
-</html>
+</div>
+
+<!-- FOOTER MODERNISSIMO -->
+<footer class="modern-footer">
+    <div class="footer-content">
+        <div class="footer-col">
+            <h2 class="footer-brand">DRINK KONG</h2>
+            <p>Il portale definitivo per scoprire la vera anima della notte. Concerti, DJ set, mixology e molto altro.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Seguici sui Social</h3>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-spotify"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h3>Resta Aggiornato</h3>
+            <p>Iscriviti alla newsletter per non perderti gli eventi esclusivi.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Grazie per esserti iscritto!');">
+                <input type="email" placeholder="La tua email" required>
+                <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Drink Kong Eventi. Tutti i diritti riservati. Vietata la riproduzione.</p>
+    </div>
+</footer>
+
+<!-- Modale Dettagli Evento -->
+<div id="eventModal" class="modal-overlay">
+    <div class="modal-box" id="modalContent">
+        <img id="m-img" src="" class="modal-img">
+        <div class="modal-body">
+            <h2 id="m-title" class="modal-title"></h2>
+            <p class="modal-meta"><i class="far fa-calendar"></i> <span id="m-date"></span> &nbsp; <i class="far fa-clock"></i> <span id="m-time"></span></p>
+            <p id="m-desc" class="modal-desc"></p>
+            <p class="modal-address"><i class="fas fa-map-pin"></i> <span id="m-address"></span></p>
+            <button onclick="closeModal()" class="btn-close">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero */
+    .hero-section {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('{{ url_for('static', filename='background1.jpg') }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 45vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 40px 15px;
+        position: relative;
+    }
+    .hero-title { color: #00f3ff; font-style: italic; font-size: clamp(3em, 8vw, 5em); text-shadow: 0px 0px 20px rgba(0,243,255,0.9); margin: 0; letter-spacing: 2px; }
+    .hero-subtitle { color: white; font-size: clamp(1.3em, 4vw, 2.2em); margin: 15px 0 5px; font-weight: 300; letter-spacing: 1px; }
+    .hero-desc { color: #aaa; font-size: clamp(0.95em, 2.5vw, 1.2em); margin: 0; }
+
+    /* Container */
+    .main-container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+
+    /* Barra di Ricerca */
+    .search-container { margin-top: -40px; display: flex; justify-content: center; position: relative; z-index: 10; margin-bottom: 50px; }
+    .glass-effect {
+        background: rgba(30, 30, 30, 0.65) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
+    }
+    .search-form { padding: 20px 25px; border-radius: 16px; display: flex; gap: 15px; align-items: center; width: 100%; max-width: 950px; flex-wrap: wrap; }
+    .input-control {
+        flex: 1 1 180px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        outline: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 0.95em;
+        width: 100%;
+        transition: border-color 0.3s;
+    }
+    .input-control:focus { border-color: #00f3ff; }
+    .btn-search {
+        flex: 1 1 120px; padding: 14px 25px; background: linear-gradient(45deg, #f39c12, #ffb03a); border: none; color: white;
+        font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1em; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* Griglia Eventi */
+    .section-title { text-align: center; color: #fff; font-size: clamp(1.8em, 5vw, 2.5em); margin: 50px 0 35px 0; font-weight: 300; letter-spacing: 1px; }
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 60px; }
+    
+    .fade-in-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .fade-in-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+    .event-card {
+        background: #1a1a1a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        border: 1px solid #333; cursor: pointer; display: flex; flex-direction: column; transition: all 0.4s ease;
+    }
+    .card-img-wrapper { position: relative; width: 100%; height: 200px; overflow: hidden; }
+    .event-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    
+    .img-overlay {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,243,255,0.2);
+        display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2em;
+        opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(2px); pointer-events: none;
+    }
+    
+    /* ATTENZIONE: Effetti Hover abilitati SOLO per dispositivi PC (Mouse) */
+    @media (hover: hover) {
+        .event-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 30px rgba(0, 243, 255, 0.2); border-color: #00f3ff; }
+        .event-card:hover .event-img { transform: scale(1.1); }
+        .event-card:hover .img-overlay { opacity: 1; }
+        .btn-search:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4); }
+    }
+
+    .event-body { padding: 22px; flex: 1; display: flex; flex-direction: column; background: linear-gradient(to bottom, #1a1a1a, #111); }
+    .event-title { margin: 0 0 12px 0; color: #fff; font-size: 1.3em; font-weight: 600; }
+    .event-time { color: #00f3ff; font-size: 0.95em; margin: 0 0 10px 0; font-weight: 500; }
+    .divider { color: #555; margin: 0 5px; }
+    .event-location { color: #888; font-size: 0.9em; margin-top: auto; }
+    .no-events { color: #aaa; text-align: center; grid-column: 1 / -1; padding: 50px 20px; background: #1a1a1a; border-radius: 12px; border: 1px dashed #444; }
+
+    /* Mappa e Footer */
+    .map-container { height: 500px; width: 100%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #333; margin-bottom: 80px; z-index: 1; }
+    .modern-footer { background: linear-gradient(to bottom, #121212, #050505); border-top: 1px solid rgba(255,255,255,0.05); padding: 60px 20px 20px; color: #aaa; margin-top: 50px; }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; margin-bottom: 40px; }
+    .footer-col { flex: 1 1 300px; }
+    .footer-brand { color: #00f3ff; font-style: italic; font-size: 1.8em; margin-bottom: 15px; }
+    .footer-col h3 { color: #fff; font-size: 1.2em; margin-bottom: 20px; font-weight: 500; }
+    .footer-col p { line-height: 1.6; font-size: 0.95em; }
+    .social-icons { display: flex; gap: 15px; }
+    .social-icons a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1a1a1a; color: #fff; text-decoration: none; font-size: 1.2em; transition: all 0.3s; border: 1px solid #333; }
+    .newsletter-form { display: flex; margin-top: 15px; }
+    .newsletter-form input { flex: 1; padding: 12px 15px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 8px 0 0 8px; outline: none; }
+    .newsletter-form button { padding: 12px 20px; background: #f39c12; color: white; border: none; border-radius: 0 8px 8px 0; cursor: pointer; transition: background 0.3s; }
+    .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #222; font-size: 0.85em; color: #666; }
+
+    /* Modale */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 3000; justify-content: center; align-items: center; padding: 15px; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-box { background: #1e1e1e; border-radius: 16px; max-width: 550px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #444; transform: translateY(-20px) scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .modal-img { width: 100%; height: 250px; object-fit: cover; }
+    .modal-body { padding: 25px; }
+    .modal-title { color: #00f3ff; margin-top: 0; font-size: 1.6em; }
+    .modal-meta { color: #fff; font-size: 0.95em; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
+    .modal-desc { color: #ccc; line-height: 1.6; font-size: 1em; margin-bottom: 20px; }
+    .modal-address { color: #f39c12; font-weight: bold; font-size: 0.95em; }
+    .btn-close { margin-top: 25px; width: 100%; padding: 14px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em; }
+
+    /* CORREZIONI SPECIFICHE PER SMARTPHONE */
+    @media (max-width: 600px) {
+        /* Fix per la barra di ricerca: i campi non si deformano in altezza */
+        .search-form { flex-direction: column; align-items: stretch; gap: 15px; padding: 20px; }
+        .input-control { flex: none; width: 100%; height: auto; padding: 14px 15px; font-size: 16px; /* font-size 16px blocca lo zoom automatico di iPhone */ }
+        .btn-search { flex: none; width: 100%; height: auto; padding: 15px; }
+        
+        .events-grid { gap: 20px; }
+        
+        /* Fix Modale Mobile */
+        .modal-box { max-width: 95%; max-height: 85vh; }
+        .modal-img { height: 180px; }
+        .modal-body { padding: 18px; }
+        .modal-title { font-size: 1.4em; }
+
+        .map-container { height: 350px; }
+        .footer-content { gap: 30px; text-align: center; }
+        .social-icons { justify-content: center; }
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Inizializza IntersectionObserver per le animazioni di Fade-in allo scroll
+    document.addEventListener("DOMContentLoaded", function() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        document.querySelectorAll('.fade-in-on-scroll').forEach((el) => {
+            observer.observe(el);
+        });
+    });
+
+    // Gestione Modale
+    const modal = document.getElementById('eventModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    function openModal(titolo, desc, data, orario, indirizzo, img) {
+        document.getElementById('m-title').innerText = titolo;
+        document.getElementById('m-desc').innerText = desc;
+        document.getElementById('m-date').innerText = data;
+        document.getElementById('m-time').innerText = orario;
+        document.getElementById('m-address').innerText = indirizzo;
+        document.getElementById('m-img').src = img;
+        
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modalContent.style.transform = 'translateY(0) scale(1)';
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.style.opacity = '0';
+        modalContent.style.transform = 'translateY(-20px) scale(0.95)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+
+    // Inizializza Mappa Scura
+    var map = L.map('map').setView([45.5415, 10.2118], 10);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    map.locate({setView: true, maxZoom: 12});
+
+    map.on('locationfound', function(e) {
+        L.circleMarker(e.latlng, {
+            radius: 8, fillColor: "#00f3ff", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
+        }).addTo(map).bindPopup("<b>Tu sei qui!</b>").openPopup();
+    });
+
+    var eventi = {{ eventi | tojson | safe }};
+    
+    var eventIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+    });
+
+    eventi.forEach(function(evento) {
+        var popupContent = `
+            <div style='color: #000; text-align: center; width: 150px;'>
+                <img src='${evento.immagine}' style='width: 100%; height: 80px; object-fit: cover; border-radius: 6px; margin-bottom: 5px;'>
+                <b style='font-size:1em;'>${evento.titolo}</b><br>
+                <small style='color: #666;'>${evento.orario}</small>
+            </div>
+        `;
+        L.marker([evento.latitudine, evento.longitudine], {icon: eventIcon}).addTo(map)
+            .bindPopup(popupContent);
+    });
+</script>
+{% endblock %}
