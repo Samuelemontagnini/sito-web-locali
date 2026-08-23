@@ -57,7 +57,7 @@
 
 </div>
 
-<!-- NUOVO FOOTER MODERNISSIMO -->
+<!-- FOOTER MODERNISSIMO -->
 <footer class="modern-footer">
     <div class="footer-content">
         <div class="footer-col">
@@ -107,7 +107,7 @@
         background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('{{ url_for('static', filename='background1.jpg') }}');
         background-size: cover;
         background-position: center;
-        background-attachment: fixed; /* Parallasse per profondità */
+        background-attachment: fixed;
         min-height: 45vh;
         display: flex;
         flex-direction: column;
@@ -117,43 +117,15 @@
         padding: 40px 15px;
         position: relative;
     }
-    .hero-title {
-        color: #00f3ff;
-        font-style: italic;
-        font-size: clamp(3em, 8vw, 5em);
-        text-shadow: 0px 0px 20px rgba(0,243,255,0.9);
-        margin: 0;
-        letter-spacing: 2px;
-    }
-    .hero-subtitle {
-        color: white;
-        font-size: clamp(1.3em, 4vw, 2.2em);
-        margin: 15px 0 5px;
-        font-weight: 300;
-        letter-spacing: 1px;
-    }
-    .hero-desc {
-        color: #aaa;
-        font-size: clamp(0.95em, 2.5vw, 1.2em);
-        margin: 0;
-    }
+    .hero-title { color: #00f3ff; font-style: italic; font-size: clamp(3em, 8vw, 5em); text-shadow: 0px 0px 20px rgba(0,243,255,0.9); margin: 0; letter-spacing: 2px; }
+    .hero-subtitle { color: white; font-size: clamp(1.3em, 4vw, 2.2em); margin: 15px 0 5px; font-weight: 300; letter-spacing: 1px; }
+    .hero-desc { color: #aaa; font-size: clamp(0.95em, 2.5vw, 1.2em); margin: 0; }
 
     /* Container */
-    .main-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 15px;
-    }
+    .main-container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
 
-    /* Barra di Ricerca - GLASSMORPHISM */
-    .search-container {
-        margin-top: -40px;
-        display: flex;
-        justify-content: center;
-        position: relative;
-        z-index: 10;
-        margin-bottom: 50px;
-    }
+    /* Barra di Ricerca */
+    .search-container { margin-top: -40px; display: flex; justify-content: center; position: relative; z-index: 10; margin-bottom: 50px; }
     .glass-effect {
         background: rgba(30, 30, 30, 0.65) !important;
         backdrop-filter: blur(12px);
@@ -161,16 +133,7 @@
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
     }
-    .search-form {
-        padding: 20px 25px;
-        border-radius: 16px;
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        width: 100%;
-        max-width: 950px;
-        flex-wrap: wrap;
-    }
+    .search-form { padding: 20px 25px; border-radius: 16px; display: flex; gap: 15px; align-items: center; width: 100%; max-width: 950px; flex-wrap: wrap; }
     .input-control {
         flex: 1 1 180px;
         padding: 14px;
@@ -183,288 +146,88 @@
         width: 100%;
         transition: border-color 0.3s;
     }
-    .input-control:focus {
-        border-color: #00f3ff;
-    }
+    .input-control:focus { border-color: #00f3ff; }
     .btn-search {
-        flex: 1 1 120px;
-        padding: 14px 25px;
-        background: linear-gradient(45deg, #f39c12, #ffb03a);
-        border: none;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1em;
-        transition: transform 0.2s, box-shadow 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .btn-search:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        flex: 1 1 120px; padding: 14px 25px; background: linear-gradient(45deg, #f39c12, #ffb03a); border: none; color: white;
+        font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1em; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 1px;
     }
 
     /* Griglia Eventi */
-    .section-title {
-        text-align: center;
-        color: #fff;
-        font-size: clamp(1.8em, 5vw, 2.5em);
-        margin: 50px 0 35px 0;
-        font-weight: 300;
-        letter-spacing: 1px;
+    .section-title { text-align: center; color: #fff; font-size: clamp(1.8em, 5vw, 2.5em); margin: 50px 0 35px 0; font-weight: 300; letter-spacing: 1px; }
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 60px; }
+    
+    .fade-in-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .fade-in-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+    .event-card {
+        background: #1a1a1a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        border: 1px solid #333; cursor: pointer; display: flex; flex-direction: column; transition: all 0.4s ease;
     }
-    .events-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px;
-        margin-bottom: 60px;
+    .card-img-wrapper { position: relative; width: 100%; height: 200px; overflow: hidden; }
+    .event-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    
+    .img-overlay {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,243,255,0.2);
+        display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2em;
+        opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(2px); pointer-events: none;
     }
     
-    /* Animazione Scroll */
-    .fade-in-on-scroll {
-        opacity: 0;
-        transform: translateY(40px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .fade-in-on-scroll.is-visible {
-        opacity: 1;
-        transform: translateY(0);
+    /* ATTENZIONE: Effetti Hover abilitati SOLO per dispositivi PC (Mouse) */
+    @media (hover: hover) {
+        .event-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 30px rgba(0, 243, 255, 0.2); border-color: #00f3ff; }
+        .event-card:hover .event-img { transform: scale(1.1); }
+        .event-card:hover .img-overlay { opacity: 1; }
+        .btn-search:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4); }
     }
 
-    /* Card Sbalorditiva */
-    .event-card {
-        background: #1a1a1a;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        border: 1px solid #333;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.4s ease;
-    }
-    .event-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 15px 30px rgba(0, 243, 255, 0.2);
-        border-color: #00f3ff;
-    }
-    .card-img-wrapper {
-        position: relative;
-        width: 100%;
-        height: 200px;
-        overflow: hidden;
-    }
-    .event-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    .event-card:hover .event-img {
-        transform: scale(1.1);
-    }
-    .img-overlay {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,243,255,0.2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-weight: bold;
-        font-size: 1.2em;
-        opacity: 0;
-        transition: opacity 0.3s;
-        backdrop-filter: blur(2px);
-    }
-    .event-card:hover .img-overlay {
-        opacity: 1;
-    }
-    .event-body {
-        padding: 22px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background: linear-gradient(to bottom, #1a1a1a, #111);
-    }
-    .event-title {
-        margin: 0 0 12px 0;
-        color: #fff;
-        font-size: 1.3em;
-        font-weight: 600;
-    }
-    .event-time {
-        color: #00f3ff;
-        font-size: 0.95em;
-        margin: 0 0 10px 0;
-        font-weight: 500;
-    }
+    .event-body { padding: 22px; flex: 1; display: flex; flex-direction: column; background: linear-gradient(to bottom, #1a1a1a, #111); }
+    .event-title { margin: 0 0 12px 0; color: #fff; font-size: 1.3em; font-weight: 600; }
+    .event-time { color: #00f3ff; font-size: 0.95em; margin: 0 0 10px 0; font-weight: 500; }
     .divider { color: #555; margin: 0 5px; }
-    .event-location {
-        color: #888;
-        font-size: 0.9em;
-        margin-top: auto;
-    }
-    .no-events {
-        color: #aaa;
-        text-align: center;
-        grid-column: 1 / -1;
-        padding: 50px 20px;
-        background: #1a1a1a;
-        border-radius: 12px;
-        border: 1px dashed #444;
-    }
+    .event-location { color: #888; font-size: 0.9em; margin-top: auto; }
+    .no-events { color: #aaa; text-align: center; grid-column: 1 / -1; padding: 50px 20px; background: #1a1a1a; border-radius: 12px; border: 1px dashed #444; }
 
-    /* Mappa */
-    .map-container {
-        height: 500px;
-        width: 100%;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        border: 1px solid #333;
-        margin-bottom: 80px;
-        z-index: 1;
-    }
-
-    /* FOOTER MODERNISSIMO */
-    .modern-footer {
-        background: linear-gradient(to bottom, #121212, #050505);
-        border-top: 1px solid rgba(255,255,255,0.05);
-        padding: 60px 20px 20px;
-        color: #aaa;
-        margin-top: 50px;
-    }
-    .footer-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 40px;
-        justify-content: space-between;
-        margin-bottom: 40px;
-    }
-    .footer-col {
-        flex: 1 1 300px;
-    }
-    .footer-brand {
-        color: #00f3ff;
-        font-style: italic;
-        font-size: 1.8em;
-        margin-bottom: 15px;
-    }
-    .footer-col h3 {
-        color: #fff;
-        font-size: 1.2em;
-        margin-bottom: 20px;
-        font-weight: 500;
-    }
-    .footer-col p {
-        line-height: 1.6;
-        font-size: 0.95em;
-    }
-    .social-icons {
-        display: flex;
-        gap: 15px;
-    }
-    .social-icons a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #1a1a1a;
-        color: #fff;
-        text-decoration: none;
-        font-size: 1.2em;
-        transition: all 0.3s;
-        border: 1px solid #333;
-    }
-    .social-icons a:hover {
-        background: #00f3ff;
-        color: #000;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,243,255,0.4);
-    }
-    .newsletter-form {
-        display: flex;
-        margin-top: 15px;
-    }
-    .newsletter-form input {
-        flex: 1;
-        padding: 12px 15px;
-        border: 1px solid #444;
-        background: #1a1a1a;
-        color: white;
-        border-radius: 8px 0 0 8px;
-        outline: none;
-    }
-    .newsletter-form button {
-        padding: 12px 20px;
-        background: #f39c12;
-        color: white;
-        border: none;
-        border-radius: 0 8px 8px 0;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    .newsletter-form button:hover {
-        background: #d68100;
-    }
-    .footer-bottom {
-        text-align: center;
-        padding-top: 20px;
-        border-top: 1px solid #222;
-        font-size: 0.85em;
-        color: #666;
-    }
+    /* Mappa e Footer */
+    .map-container { height: 500px; width: 100%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #333; margin-bottom: 80px; z-index: 1; }
+    .modern-footer { background: linear-gradient(to bottom, #121212, #050505); border-top: 1px solid rgba(255,255,255,0.05); padding: 60px 20px 20px; color: #aaa; margin-top: 50px; }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; margin-bottom: 40px; }
+    .footer-col { flex: 1 1 300px; }
+    .footer-brand { color: #00f3ff; font-style: italic; font-size: 1.8em; margin-bottom: 15px; }
+    .footer-col h3 { color: #fff; font-size: 1.2em; margin-bottom: 20px; font-weight: 500; }
+    .footer-col p { line-height: 1.6; font-size: 0.95em; }
+    .social-icons { display: flex; gap: 15px; }
+    .social-icons a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1a1a1a; color: #fff; text-decoration: none; font-size: 1.2em; transition: all 0.3s; border: 1px solid #333; }
+    .newsletter-form { display: flex; margin-top: 15px; }
+    .newsletter-form input { flex: 1; padding: 12px 15px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 8px 0 0 8px; outline: none; }
+    .newsletter-form button { padding: 12px 20px; background: #f39c12; color: white; border: none; border-radius: 0 8px 8px 0; cursor: pointer; transition: background 0.3s; }
+    .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #222; font-size: 0.85em; color: #666; }
 
     /* Modale */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85);
-        backdrop-filter: blur(5px);
-        z-index: 3000;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    .modal-box {
-        background: #1e1e1e;
-        border-radius: 16px;
-        max-width: 550px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        border: 1px solid #444;
-        transform: translateY(-20px) scale(0.95);
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    }
-    .modal-img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-    }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 3000; justify-content: center; align-items: center; padding: 15px; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-box { background: #1e1e1e; border-radius: 16px; max-width: 550px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #444; transform: translateY(-20px) scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .modal-img { width: 100%; height: 250px; object-fit: cover; }
     .modal-body { padding: 25px; }
     .modal-title { color: #00f3ff; margin-top: 0; font-size: 1.6em; }
     .modal-meta { color: #fff; font-size: 0.95em; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
     .modal-desc { color: #ccc; line-height: 1.6; font-size: 1em; margin-bottom: 20px; }
     .modal-address { color: #f39c12; font-weight: bold; font-size: 0.95em; }
-    .btn-close {
-        margin-top: 25px; width: 100%; padding: 14px;
-        background: #333; color: white; border: none; border-radius: 8px;
-        cursor: pointer; font-weight: bold; font-size: 1em; transition: background 0.2s;
-    }
-    .btn-close:hover { background: #555; }
+    .btn-close { margin-top: 25px; width: 100%; padding: 14px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em; }
 
+    /* CORREZIONI SPECIFICHE PER SMARTPHONE */
     @media (max-width: 600px) {
-        .search-form { flex-direction: column; gap: 10px; padding: 15px; }
+        /* Fix per la barra di ricerca: i campi non si deformano in altezza */
+        .search-form { flex-direction: column; align-items: stretch; gap: 15px; padding: 20px; }
+        .input-control { flex: none; width: 100%; height: auto; padding: 14px 15px; font-size: 16px; /* font-size 16px blocca lo zoom automatico di iPhone */ }
+        .btn-search { flex: none; width: 100%; height: auto; padding: 15px; }
+        
+        .events-grid { gap: 20px; }
+        
+        /* Fix Modale Mobile */
+        .modal-box { max-width: 95%; max-height: 85vh; }
+        .modal-img { height: 180px; }
+        .modal-body { padding: 18px; }
+        .modal-title { font-size: 1.4em; }
+
         .map-container { height: 350px; }
         .footer-content { gap: 30px; text-align: center; }
         .social-icons { justify-content: center; }
@@ -481,15 +244,11 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target); // Anima solo una volta
+                    observer.unobserve(entry.target); 
                 }
             });
-        }, {
-            threshold: 0.1, // Attiva l'animazione quando il 10% dell'elemento è visibile
-            rootMargin: "0px 0px -50px 0px"
-        });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
-        // Applica l'observer a tutti gli elementi con la classe
         document.querySelectorAll('.fade-in-on-scroll').forEach((el) => {
             observer.observe(el);
         });
