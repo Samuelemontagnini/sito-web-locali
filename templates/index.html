@@ -45,7 +45,7 @@
         {% endif %}
     </div>
 
-    <!-- Mappa Responsiva -->
+    <!-- Mappa Scura Responsiva -->
     <h3 class="section-title"><i class="fas fa-globe-europe"></i> Mappa Interattiva</h3>
     <div id="map" class="map-container"></div>
 
@@ -337,10 +337,12 @@
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
 
+    // Inizializza Mappa centrata su Brescia
     var map = L.map('map').setView([45.5415, 10.2118], 10);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
+    // Layer Mappa Scura (CartoDB Dark Matter)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         maxZoom: 19
     }).addTo(map);
 
