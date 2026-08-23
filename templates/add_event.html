@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Aggiungiamo i file CSS e JS di Leaflet Control Geocoder per la ricerca indirizzi -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<div style="display: flex; justify-content: center; align-items: center; padding: 40px 20px;">
+    <div style="background: #1e1e1e; padding: 30px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); width: 100%; max-width: 650px; border: 1px solid #333;">
+        
+        <h2 style="color: #f39c12; text-align: center; margin-top: 0;">Aggiungi Nuovo Evento</h2>
+        <p style="color: #aaa; text-align: center; font-size: 0.9em; margin-bottom: 20px;">Scrivi l'indirizzo a parole e usa la lente d'ingrandimento sulla mappa per cercarlo!</p>
+        
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div style="margin-bottom: 15px;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.titolo.label }}</label><br>
+                {{ form.titolo(style="width: 95%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none;") }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.descrizione.label }}</label><br>
+                {{ form.descrizione(style="width: 95%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none; height: 70px;") }}
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.data.label }}</label><br>
+                    {{ form.data(style="width: 92%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none;", placeholder="es. 25/08/2026") }}
+                </div>
+                <div style="flex: 1;">
+                    <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.orario.label }}</label><br>
+                    {{ form.orario(style="width: 92%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none;", placeholder="es. 22:30") }}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.indirizzo.label }} (Testo descrittivo)</label><br>
+                {{ form.indirizzo(style="width: 95%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none;", placeholder="Es. Piazza della Loggia, Brescia") }}
+            </div>
+
+            <!-- Campi nascosti per inviare latitudine e longitudine scelte sulla mappa -->
+            <input type="hidden" id="lat-input" name="latitudine" value="45.5415">
+            <input type="hidden" id="lon-input" name="longitudine" value="10.2118">
+
+            <!-- Mappa con barra di ricerca integrata -->
+            <div style="margin-bottom: 15px;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">Cerca la via o clicca sulla mappa:</label>
+                <div id="map-picker" style="height: 300px; width: 95%; border-radius: 8px; margin-top: 5px; border: 1px solid #444;"></div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ form.immagine.label }}</label><br>
+                {{ form.immagine(style="width: 95%; padding: 5px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white;") }}
+            </div>
+
+            {{ form.submit(style="width: 100%; padding: 12px; background-color: #f39c12; color: white; font-weight: bold; font-size: 1.1em; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;") }}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Script di Leaflet e del Geocoder per la ricerca interattiva sulla mappa -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+    // Inizializza la mappa centrata su Brescia
+    var map = L.map('map-picker').setView([45.5415, 10.2118], 13);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    var marker = L.marker([45.5415, 10.2118], {draggable: true}).addTo(map);
+
+    // AGGIUNGIAMO LA BARRA DI RICERCA DIRETTAMENTE SULLA MAPPA (stile Google Maps)
+    L.Control.geocoder({
+        defaultMarkGeocode: false,
+        placeholder: "Cerca via, piazza o città...",
+        errorMessage: "Indirizzo non trovato."
+    }).on('markgeocode', function(e) {
+        var bbox = e.geocode.bbox;
+        var center = e.geocode.center;
+        
+        // Sposta la mappa e il pin sul risultato trovato
+        map.setView(center, 16);
+        marker.setLatLng(center);
+        
+        // Aggiorna i campi nascosti per il database
+        document.getElementById('lat-input').value = center.lat;
+        document.getElementById('lon-input').value = center.lng;
+    }).addTo(map);
+
+    // Permette anche di cliccare direttamente sulla mappa se preferisci
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lon = e.latlng.lng;
+        
+        marker.setLatLng([lat, lon]);
+        document.getElementById('lat-input').value = lat;
+        document.getElementById('lon-input').value = lon;
+    });
+
+    // Permette di trascinare il pin a mano
+    marker.on('dragend', function(e) {
+        var coord = marker.getLatLng();
+        document.getElementById('lat-input').value = coord.lat;
+        document.getElementById('lon-input').value = coord.lng;
+    });
+</script>
+{% endblock %}

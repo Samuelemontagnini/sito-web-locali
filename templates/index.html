@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- SEZIONE HERO CON EFFETTO PARALLASSE APPLE-STYLE -->
+<div class="parallax-hero">
+    <div class="hero-content">
+        <h1 style="color: #00f3ff; font-style: italic; font-size: 4.5em; text-shadow: 0px 0px 15px rgba(0,243,255,0.8); margin: 0;">Drink Kong</h1>
+        <h2 style="color: white; font-size: 2.2em; margin: 10px 0;">Esplora Tutti Gli Eventi</h2>
+        <p style="color: #ddd; font-size: 1.3em; margin: 0;">Trova gli eventi nella tua zona</p>
+    </div>
+</div>
+
+<!-- Contenitore centrale -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 2; background-color: #121212;">
+
+    <!-- Barra di ricerca scura -->
+    <div style="text-align: center; margin-top: -35px; position: relative; z-index: 10;">
+        <form action="/" method="GET" style="background: #1a1a1a; padding: 15px 25px; border-radius: 8px; display: inline-flex; gap: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); align-items: center; border: 1px solid #333;">
+            <input type="text" name="q" placeholder="Inserisci località" style="padding: 10px; width: 220px; border: 1px solid #444; border-radius: 5px; outline: none; background-color: #333; color: white;">
+            <input type="date" name="data" style="padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: white; outline: none;">
+            <select name="orario" style="padding: 10px; border: 1px solid #444; border-radius: 5px; background: #333; color: white; outline: none;">
+                <option value="">Mattina (6:00 - 12:00)</option>
+                <option value="pomeriggio">Pomeriggio (12:00 - 18:00)</option>
+                <option value="sera">Sera (18:00 - 24:00)</option>
+            </select>
+            <button type="submit" style="padding: 10px 30px; background-color: #f39c12; border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer;">Cerca</button>
+        </form>
+    </div>
+
+    <!-- Griglia Eventi in Evidenza -->
+    <h3 style="text-align: center; color: #fff; font-size: 2em; margin: 60px 0 30px 0;">Eventi in Evidenza</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
+        {% for evento in eventi %}
+        <div class="event-card" onclick="openModal('{{ evento.titolo }}', '{{ evento.descrizione }}', '{{ evento.data }}', '{{ evento.orario }}', '{{ evento.indirizzo }}', '{{ evento.immagine }}')">
+            <img src="{{ evento.immagine }}" alt="{{ evento.titolo }}">
+            <div style="padding: 20px;">
+                <h3 style="margin: 0 0 10px 0; color: #fff;">{{ evento.titolo }}</h3>
+                <p style="color: #00f3ff; margin: 0;"><i class="far fa-calendar-alt"></i> {{ evento.data }} | <i class="far fa-clock"></i> {{ evento.orario }}</p>
+                <p style="color: #aaa; font-size: 0.9em; margin-top: 10px;"><i class="fas fa-map-marker-alt"></i> Clicca per info</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sezione Mappa -->
+    <h3 style="text-align: center; color: #fff; font-size: 2.2em; margin-bottom: 20px;"><i class="fas fa-globe-europe"></i> Esplora la Mappa</h3>
+    <div id="map" style="height: 500px; width: 100%; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 2px solid #333; margin-bottom: 80px;"></div>
+
+</div>
+
+<!-- Finestra Modale (Info Evento) -->
+<div id="eventModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;">
+    <div style="background: #1e1e1e; border-radius: 15px; max-width: 600px; width: 90%; overflow: hidden; border: 1px solid #444; transform: translateY(-50px); transition: transform 0.3s ease;" id="modalContent">
+        <img id="m-img" src="" style="width: 100%; height: 250px; object-fit: cover;">
+        <div style="padding: 30px;">
+            <h2 id="m-title" style="color: #00f3ff; margin-top: 0;"></h2>
+            <p style="color: #fff; font-size: 1.1em; border-bottom: 1px solid #333; padding-bottom: 15px;"><i class="far fa-calendar"></i> <span id="m-date"></span> - <i class="far fa-clock"></i> <span id="m-time"></span></p>
+            <p style="color: #ccc; line-height: 1.6;" id="m-desc"></p>
+            <p style="color: #f39c12; font-weight: bold;"><i class="fas fa-map-pin"></i> <span id="m-address"></span></p>
+            <button onclick="closeModal()" style="margin-top: 20px; width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Stili CSS con Effetto Parallasse Reale -->
+<style>
+    /* Effetto Parallasse Apple Style */
+    .parallax-hero {
+        position: relative;
+        height: 65vh;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{{ url_for('static', filename='background1.jpg') }}');
+        background-attachment: fixed; /* Questa riga crea il movimento parallasse mentre scrolli */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // --- GESTIONE MODALE ---
+    const modal = document.getElementById('eventModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    function openModal(titolo, desc, data, orario, indirizzo, img) {
+        document.getElementById('m-title').innerText = titolo;
+        document.getElementById('m-desc').innerText = desc;
+        document.getElementById('m-date').innerText = data;
+        document.getElementById('m-time').innerText = orario;
+        document.getElementById('m-address').innerText = indirizzo;
+        document.getElementById('m-img').src = img;
+        
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modalContent.style.transform = 'translateY(0)';
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.style.opacity = '0';
+        modalContent.style.transform = 'translateY(-50px)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+
+    // --- GESTIONE MAPPA E GEOLOCALIZZAZIONE ---
+    var map = L.map('map').setView([45.5415, 10.2118], 10);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    map.locate({setView: true, maxZoom: 12});
+
+    map.on('locationfound', function(e) {
+        L.circleMarker(e.latlng, {
+            radius: 8, fillColor: "#00f3ff", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
+        }).addTo(map).bindPopup("<b style='color:#000;'>Tu sei qui!</b>").openPopup();
+    });
+
+    map.on('locationerror', function(e) {
+        console.log("Geolocalizzazione non consentita.");
+    });
+
+    var eventi = {{ eventi | tojson | safe }};
+    var eventIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+    });
+
+    eventi.forEach(function(evento) {
+        var popupContent = `
+            <div style='color: #000; text-align: center; width: 150px;'>
+                <img src='${evento.immagine}' style='width: 100%; height: 80px; object-fit: cover; border-radius: 5px; margin-bottom: 5px;'>
+                <b style='font-size:1.1em;'>${evento.titolo}</b><br>
+                <i class="fas fa-clock"></i> ${evento.orario}<br>
+                <small>${evento.indirizzo}</small>
+            </div>
+        `;
+        L.marker([evento.latitudine, evento.longitudine], {icon: eventIcon}).addTo(map)
+            .bindPopup(popupContent);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
+    <div style="background: #1e1e1e; padding: 40px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid #333; text-align: center;">
+        
+        <h2 style="color: #00f3ff; margin-top: 0;">Accesso</h2>
+        <p style="color: #aaa; margin-bottom: 30px;">Accedi al tuo account</p>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            {% for field in [form.email, form.password] %}
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="color: white; font-weight: bold; font-size: 0.9em;">{{ field.label }}</label><br>
+                {{ field(style="width: 90%; padding: 12px; margin-top: 5px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none;") }}
+                
+                {% if field.errors %}
+                    <div style="color: #e74c3c; font-size: 0.85em; margin-top: 5px;">{{ field.errors[0] }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {{ form.submit(style="width: 100%; padding: 12px; background-color: #00f3ff; color: #000; font-weight: bold; font-size: 1.1em; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 10px;") }}
+        </form>
+
+        <p style="color: #aaa; margin-top: 25px; font-size: 0.9em;">
+            Non hai un account? <a href="/register" style="color: #00f3ff; text-decoration: none; font-weight: bold;">Registrati qui</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
