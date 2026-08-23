@@ -2,77 +2,126 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventi - Drink Kong</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drink Kong - Eventi</title>
+    
+    <!-- Font e Icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Leaflet CSS per le Mappe -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; display: flex; flex-direction: column; min-height: 100vh; }
-        
-        /* Navbar Animata */
-        .navbar { background-color: #000; padding: 20px 50px; display: flex; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
-        .navbar a { color: white; text-decoration: none; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; font-size: 14px; transition: all 0.3s ease; }
-        .navbar a:hover { color: #00f3ff; transform: translateY(-2px); }
-        
-        /* Sistema di Alert */
-        .alerts { position: fixed; top: 80px; right: 20px; z-index: 2000; }
-        .alert { padding: 15px 25px; margin-bottom: 10px; border-radius: 5px; color: white; font-weight: bold; animation: slideIn 0.5s ease-out; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .alert-success { background-color: #2ecc71; }
-        .alert-danger { background-color: #e74c3c; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-        .footer { background-color: #000; color: white; text-align: center; padding: 40px 20px; margin-top: auto; border-top: 1px solid #333; }
-        
-        /* Design delle Card Animato */
-        .event-card { background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.4); border: 1px solid #333; transition: all 0.3s ease; cursor: pointer; }
-        .event-card:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,243,255,0.2); border-color: #00f3ff; }
-        .event-card img { width: 100%; height: 200px; object-fit: cover; transition: transform 0.5s ease; }
-        .event-card:hover img { transform: scale(1.05); }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Navbar Responsiva */
+        .navbar {
+            background: #000000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+        }
+
+        .nav-brand {
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #00f3ff;
+        }
+
+        /* Notifiche Flash */
+        .flash-msg {
+            max-width: 1200px;
+            margin: 15px auto;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .flash-success { background: #27ae60; color: white; }
+        .flash-danger { background: #c0392b; color: white; }
+
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                gap: 12px;
+                padding: 15px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="navbar">
-        <div style="flex: 1; display: flex; gap: 20px;">
-            <!-- Se l'utente è loggato ed è admin, vede il tasto Aggiungi Evento -->
-            {% if current_user.is_authenticated and current_user.is_admin %}
-                <a href="/admin/add" style="color: #f39c12;"><i class="fas fa-plus"></i> Nuovo Evento</a>
-            {% endif %}
-        </div> 
-        
-        <div style="display: flex; gap: 60px;">
-            <a href="/">Bar</a>
-            <a href="/">Disco</a>
-            <a href="/">Party</a>
-        </div>
-        
-        <div style="flex: 1; text-align: right;">
+    <nav class="navbar">
+        <a href="/" class="nav-brand">DRINK KONG</a>
+        <div class="nav-links">
+            <a href="/">HOME</a>
             {% if current_user.is_authenticated %}
-                <span style="margin-right: 15px; color: #aaa;">Ciao, {{ current_user.username }}</span>
-                <a href="/logout">Logout <i class="fas fa-sign-out-alt"></i></a>
+                {% if current_user.is_admin %}
+                    <a href="/admin/add" style="color: #f39c12;"><i class="fas fa-plus-circle"></i> NUOVO EVENTO</a>
+                {% endif %}
+                <span style="color: #888; font-size: 0.85em;">{{ current_user.username }}</span>
+                <a href="/logout" style="color: #e74c3c;">LOGOUT</a>
             {% else %}
-                <a href="/login">Login <i class="fas fa-user"></i></a>
+                <a href="/login">LOGIN</a>
+                <a href="/register">REGISTRATI</a>
             {% endif %}
         </div>
-    </div>
+    </nav>
 
-    <!-- Mostra gli avvisi -->
-    <div class="alerts">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     {% block content %}{% endblock %}
 
-    <div class="footer">
-        <p>Email: info@drinkkong.com | Phone: +39 06 1234567<br>© 2026 Drink Kong</p>
-    </div>
-
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     {% block scripts %}{% endblock %}
 </body>
